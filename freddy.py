@@ -60,6 +60,7 @@ class GadgetApp(Frame):
             self.text.delete(0.0, END)
         else:
             message = "Invalid Action."
+            self.bell()
 
         #This line deletes any previous strings from the text widgets (see #13)
         self.text.delete(0.0, END)
