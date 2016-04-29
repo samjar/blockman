@@ -42,7 +42,7 @@ class GadgetApp(Frame):
     # the new method! Hurraaaay. Dunno what to say about it. Was it necessary? 
     # It's been like 20 minutes since i wrote all this, and I've already forgotten.
     def openTheDoor(self):
-        if self.doorOpen == True:
+        if self.doorOpen == 1:
             self.photo1 = PhotoImage(file = "freddyroom1door.png")
         else:
                 #To display an image you first need to create an object and store the PhotImage inside it. 
@@ -56,7 +56,6 @@ class GadgetApp(Frame):
         labelPhoto1 = Label(self, image = self.photo1)
         labelPhoto1.grid(row = 0, sticky = W)
 
-
     #Defining the textReturn function, that display text in the text widget (see #13) whenever you type something and press the Submit button.
     def textReturn(self):
         #Whatever you have typed in SubmitEntry (see #37) will get stored in the "content" object.
@@ -65,21 +64,24 @@ class GadgetApp(Frame):
         #Here it checks the "content" object for strings that you've entered into the entry field. Whenever you get a correct string, it stores
         # a new string into the "message" object.
         if content == "open door":
-            message = "You have opened the door."
-            #If you type "open door", it changes the value on doorOpen to 1. It's supposed to change images, but whenever the code loops back
-            # to a certain point (see #19) it puts the value back to 0.
+            if self.doorOpen == 1:
+                message = "The door is already open, you dimwit. Geez."
+            else:
+                message = "You have opened the door."
+                #If you type "open door", it changes the value on doorOpen to 1. It's supposed to change images, but whenever the code loops back
+                # to a certain point (see #19) it puts the value back to 0.
             
-            # changing the variable to True, and then executes openTheDoor.
-            # the doorOpen variable is now outside of the loop, so it will stay at the value we want it to.
-            self.doorOpen = True
-            self.openTheDoor()
+                # changing the variable to True, and then executes openTheDoor.
+                # the doorOpen variable is now outside of the loop, so it will stay at the value we want it to.
+                self.doorOpen = 1
+                self.openTheDoor()
 
         elif content == "look around":
             message = "You are in a empty, smelly room. There is a door at the end of the room"
         elif content == "help":
             message = "Commands = open door, look around, eat banana"
         elif content == "eat banana":
-            message = "You ate the banana. You feel much better now."
+                message = "You ate the banana. You feel much better now."
         elif content == "":
             message = ""
             self.text.delete(0.0, END)
