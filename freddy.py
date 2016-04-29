@@ -1,5 +1,6 @@
 from tkinter import *
 
+
 class GadgetApp(Frame):
 
 
@@ -8,10 +9,10 @@ class GadgetApp(Frame):
 
         # Freddy: added the open door check to the init variables. I think since doorOpen was defined 
         # inside a method/function, every time that method finished executing, the doorOpen variable was destroyed.
-        # also changed to boolean values because it makes my brain understand better what's going on. 
-        self.doorOpen = False
-        self.bananaEat = True
+        # also changed to boolean values because it makes my brain understand better what's going on.
 
+        self.doorOpen = 0
+        self.bananaEat = 0
 
         self.master.title("Welcome to the Shadowgate-like game. Or something.")
         self.grid()
@@ -29,7 +30,6 @@ class GadgetApp(Frame):
 
         ## Freddy: made the picture switch into a method instead so I could call the code at #72
         self.openTheDoor()
-        self.bananaEatFunction()
         
         #The only reason I have a submit button is because I haven't figured out how to just type something in the entry field and press enter.
         #To make it work I made a button that you have to click instead of enter whenever you write something in the entry field.
@@ -58,12 +58,6 @@ class GadgetApp(Frame):
         labelPhoto1 = Label(self, image = self.photo1)
         labelPhoto1.grid(row = 0, sticky = W)
 
-    def bananaEatFunction(self): #temporary function
-        if bananaEat == 1:
-            print("Hello")
-        else:
-            print("Byebye")
-
     #Defining the textReturn function, that display text in the text widget (see #13) whenever you type something and press the Submit button.
     def textReturn(self):
         #Whatever you have typed in SubmitEntry (see #37) will get stored in the "content" object.
@@ -89,12 +83,11 @@ class GadgetApp(Frame):
         elif content == "help":
             message = "Commands = open door, look around, eat banana"
         elif content == "eat banana":
-                if bananaEat == 1:
-                    message = "You have already eaten the banana, you shmuck. Gosh."
-                else:
-                    message = "You ate the banana. You feel much better now."
-                    self.bananaEat = 1
-                    self.bananaEatFunction()
+            if self.bananaEat == 1:
+                message = "You have already eaten the banana, you shmuck. Gosh."
+            else:
+                message = "You ate the banana. You feel much better now."
+                self.bananaEat = 1
         elif content == "":
             message = ""
             self.text.delete(0.0, END)
