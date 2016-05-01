@@ -13,10 +13,24 @@ class GadgetApp(Frame):
 
         self.doorOpen = 0
         self.bananaEat = 0
+        self.roomID = 1
+        self.HP = 10
+
+        self.go_N = "You walked to the North."
+        self.go_S = "You walked to the South."
+        self.go_E = "You walked to the East."
+        self.go_W = "You walked to the West."
+        self.doorString = "You walked straight into the door, you stupid clutz."
+        self.doorString_L = "The door is locked. You need a key to open."
+
+        self.keyGet = 0
+        self.bananaGet = 1
 
         self.master.title("Welcome to the Shadowgate-like game. Or something.")
         self.grid()
-        self.create_widgets()
+        self.create_widgets()   
+
+    ########################################################### Widget Creator ################################################################
 
     def create_widgets(self):
 
@@ -29,7 +43,7 @@ class GadgetApp(Frame):
         #If I could figure out a way to switch images when it loops, I could continue on with my awesome Shadowgate rip-off.
 
         ## Freddy: made the picture switch into a method instead so I could call the code at #72
-        self.openTheDoor()
+        self.changeImage()
         
         #The only reason I have a submit button is because I haven't figured out how to just type something in the entry field and press enter.
         #To make it work I made a button that you have to click instead of enter whenever you write something in the entry field.
@@ -43,14 +57,21 @@ class GadgetApp(Frame):
 
     # the new method! Hurraaaay. Dunno what to say about it. Was it necessary? 
     # It's been like 20 minutes since i wrote all this, and I've already forgotten.
-    def openTheDoor(self):
-        if self.doorOpen == 1:
+    
+    ########################################################### Image Creator ##################################################################
+
+    def changeImage(self):
+        if self.doorOpen == 1 and self.roomID == 1:
             self.photo1 = PhotoImage(file = "freddyroom1door.png")
-        else:
+        elif self.doorOpen == 0 and self.roomID == 1:
                 #To display an image you first need to create an object and store the PhotImage inside it. 
             #Since Tkinter can't display images just like that, you need to make ANOTHER object, set it as a label and store the last object inside it.
             #Anything else would just be too simple, right?
             self.photo1 = PhotoImage(file = "freddyroom1.png")
+        elif self.roomID == 2:
+            self.photo1 = PhotoImage(file = "hallway1.png")
+        elif self.roomID == 3:
+            self.photo1 = PhotoImage(file = "dinoroom.png")
 
         # put this outside of the else statement. While trying stuff, I hypothesized another reason the picture wasn't changing:
         # even though the self.photo1 variable was changed, the labelPhoto1 didn't change with it. It was referencing what was stored 'inside'
@@ -65,7 +86,10 @@ class GadgetApp(Frame):
 
         #Here it checks the "content" object for strings that you've entered into the entry field. Whenever you get a correct string, it stores
         # a new string into the "message" object.
-        if content == "open door":
+        
+        #################################################### ROOM 1 ( First Room ) ##############################################################
+
+        if content == "open door" and self.roomID == 1:
             if self.doorOpen == 1:
                 message = "The door is already open, you dimwit. Geez."
             else:
@@ -76,21 +100,61 @@ class GadgetApp(Frame):
                 # changing the variable to True, and then executes openTheDoor.
                 # the doorOpen variable is now outside of the loop, so it will stay at the value we want it to.
                 self.doorOpen = 1
-                self.openTheDoor()
+                self.changeImage()
 
-        elif content == "look around":
-            message = "You are in a empty, smelly room. There is a door at the end of the room"
+        elif content == "look around" and self.roomID == 1:
+            message = "You are in a empty, smelly room. There is a door at the end of the room."
+        elif content == "go north" and self.roomID == 1 and self.doorOpen == 1:
+            message = "" + str(self.go_N) + ""
+            self.roomID = 2
+            self.changeImage()
+        elif content == "go north" and self.roomID == 1 and self.doorOpen == 0:
+            self.HP -= 1
+            message = "" + str(self.doorString) + " You lost 1 hitpoint."
+
+        #################################################### ROOM 2 ( Hallway with Painting ) ####################################################
+
+        elif content == "go south" and self.roomID == 2:
+            message = "" + str(self.go_S) + ""
+            self.roomID = 1
+            self.changeImage()
+        elif content == "go north" and self.roomID == 2:
+            self.HP -= 1
+            message = "" + str(self.doorString) + " You lost 1 hitpoint."
+        elif content == "go west" and self.roomID == 2:
+            message = "" + str(self.go_W) + ""
+            self.roomID = 3
+            self.changeImage()
+        elif content == "open door" and self.roomID == 2 and self.keyGet == 0:
+            message = "" + str(self.doorString_L) + ""
+        elif content == "open door" and self.roomID == 2 and self.keyGet == 1:
+            message = "You have opened the door."
+            self.keyGet -= 1
+
+        #################################################### Bathing Dino Room ###################################################################   
+        
+        elif content == "go south" and self.roomID == 3:
+            message = "" + str(self.go_S) + ""
+            self.roomID = 2
+            self.changeImage()
+
+
+        #################################################### Misc. ###############################################################################
+        
         elif content == "help":
-            message = "Commands = open door, look around, eat banana"
-        elif content == "eat banana":
+            message = "Commands = open [...], use [...], hit [...], go [north, east, south, or west], take [...], look [...]."
+        elif content == "use banana" and self.bananaGet == 1:
             if self.bananaEat == 1:
                 message = "You have already eaten the banana, you shmuck. Gosh."
             else:
-                message = "You ate the banana. You feel much better now."
+                message = "You ate the banana. You have recovered 1 HP!"
+                self.HP += 1
                 self.bananaEat = 1
         elif content == "":
             message = ""
             self.text.delete(0.0, END)
+        elif content == "hp":
+            message = "Hitpoints = " + str(self.HP) + ""
         else:
             message = "Invalid Action."
             self.bell()
