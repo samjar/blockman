@@ -38,10 +38,11 @@ class GadgetApp(Frame):
         self.master.title("Welcome to the Shadowgate-like game. Or something.")
         self.grid()
         self.create_widgets()   
-
+        
     ########################################################### Widget Creator ################################################################
 
     def create_widgets(self):
+
 
         #Creates the text window that all all the messages gets displayed in (see #30)
         self.text = Text(width = 110, height = 3, wrap = WORD)
@@ -61,8 +62,12 @@ class GadgetApp(Frame):
         self.submitButton.grid(row = 3, column = 0, sticky = W)
 
         #This is the entry field. Whatever you have typed in the field will be stored into submitEntry. 
-        self.submitEntry = Entry(width = 50)
+        self.submitEntry = Entry(width = 50)        
         self.submitEntry.grid(row = 2, column = 0, sticky = W)
+        self.master.bind('<Return>', self.textReturn)
+
+
+
 
     # the new method! Hurraaaay. Dunno what to say about it. Was it necessary? 
     # It's been like 20 minutes since i wrote all this, and I've already forgotten.
@@ -110,7 +115,7 @@ class GadgetApp(Frame):
         labelPhoto1.grid(row = 0, sticky = W)
 
     #Defining the textReturn function, that display text in the text widget (see #13) whenever you type something and press the Submit button.
-    def textReturn(self):
+    def textReturn(self, poop):
         #Whatever you have typed in SubmitEntry (see #37) will get stored in the "content" object.
         content = self.submitEntry.get()
 
@@ -328,6 +333,7 @@ class GadgetApp(Frame):
             message = "You can't do that."
             self.bell()
 
+        self.submitEntry.delete(0, 'end')    
         #This line deletes any previous strings from the text widgets (see #13)
         self.text.delete(0.0, END)
         #And this line takes the string we've got stored in the "message" object, and inserts it into the text widget (see #13)
