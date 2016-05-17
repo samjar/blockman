@@ -118,7 +118,7 @@ class GadgetApp(Frame):
     def textReturn(self, poop):
         #Whatever you have typed in SubmitEntry (see #37) will get stored in the "content" object.
         content = self.submitEntry.get()
-
+        print(self, poop)
         #Here it checks the "content" object for strings that you've entered into the entry field. Whenever you get a correct string, it stores
         # a new string into the "message" object.
         
@@ -333,7 +333,7 @@ class GadgetApp(Frame):
             message = "You can't do that."
             self.bell()
 
-        self.submitEntry.delete(0, 'end')    
+        self.submitEntry.delete(0, END)    
         #This line deletes any previous strings from the text widgets (see #13)
         self.text.delete(0.0, END)
         #And this line takes the string we've got stored in the "message" object, and inserts it into the text widget (see #13)
