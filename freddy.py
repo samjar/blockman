@@ -1,5 +1,5 @@
 import pygame
-import time
+import time 
 
 pygame.init() #initializes pygame. A must for every pygame program.
 
@@ -21,7 +21,6 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 
 clock = pygame.time.Clock() #puts the pygame clock/fps function into a variable called clock. We'll call it later in the loop function.
 
-block_size = 10
 FPS = 15 #Sets the Frames Per Second. It's super high by default, and you don't want to waste CPU on a simple so a low number will do. If I understand
 # it right, it uses the clock function to determine how many times the loop (see below) is displayed on the screen per second. 
 
