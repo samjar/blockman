@@ -19,27 +19,35 @@ room1_img = pygame.image.load(backgroundImage)
 hotkey_bar = "GUI_images/hotkey_bar.png" #the entire hotkey bar. Gonna split all the buttons up individually, but for now it's all one big image.
 heart_image = "GUI_images/heart.png" #HP bar image of a heart. Will sit in the upper-left corner.
 button_look = "GUI_images/button_look.png" #image that will show when button is inactive.
+button_open = "GUI_images/button_open.png"
+button_use = "GUI_images/button_use.png"
 hover_button_look = "GUI_images/hover_button_look.png" #image shown when button is hovered over.
+hover_button_open = "GUI_images/hover_button_open.png"
+hover_button_use = "GUI_images/hover_button_use.png"
 
 
 hot_img = pygame.image.load(hotkey_bar)
 h_img = pygame.image.load(heart_image) 
 lookB = pygame.image.load(button_look)
+openB = pygame.image.load(button_open)
+useB = pygame.image.load(button_use)
 h_lookB = pygame.image.load(hover_button_look)
+h_openB = pygame.image.load(hover_button_open)
+h_useB = pygame.image.load(hover_button_use)
 
 
 # === Mouse Cursors === #
 
 eyeball_cursor = "mouse_cursors/eyeball.png" #cursor for when "Look" is selected.
-#OPEN cursor
-#USE cursor
+open_cursor = "mouse_cursors/open.png"
+cogwheel_cursor = "mouse_cursors/cogwheel.png"
 #TAKE cursor
 #GO cursor
 #HIT cursor
 
 eC = pygame.image.load(eyeball_cursor)
-# oC = pygame.image.load(open_cursor)
-# uC = pygame.image.load(use_cursor)
+oC = pygame.image.load(open_cursor)
+cC = pygame.image.load(cogwheel_cursor)
 # tC = pygame.image.load(take_cursor)
 # gC = pygame.image.load(go_cursor)
 # hC = pygame.image.load(hit_cursor)
@@ -62,7 +70,7 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 
 clock = pygame.time.Clock() #puts the pygame clock/fps function into a variable called clock. We'll call it later in the loop function.
 
-FPS = 30 #Sets the Frames Per Second. It's super high by default, and you don't want to waste CPU on a simple so a low number will do. If I understand
+FPS = 50 #Sets the Frames Per Second. It's super high by default, and you don't want to waste CPU on a simple so a low number will do. If I understand
 # it right, it uses the clock function to determine how many times the loop (see below) is displayed on the screen per second. 
 
 # === Font/Text === #
@@ -70,6 +78,15 @@ FPS = 30 #Sets the Frames Per Second. It's super high by default, and you don't 
 font = pygame.font.SysFont(None, 25) #defines the font used in text for our game. SysFont is one of the default system fonts. Parameters = (name, size, bold = false, italic = false)
 
 #######################################################################################################################################################################################
+
+def mouse_cursor(new_cursor):
+ 
+ 	pygame.mouse.set_visible(False) #set the regular mouse cursor to invisible, so we don't see them both                  <<< NOT WORKING >>>
+	mx, my = pygame.mouse.get_pos() #gets the current position of the mouse cursor and stores the coords in mx and my
+	mx -= new_cursor.get_width()/2 
+	my -= new_cursor.get_height()/2 
+	#this centers the mouse cursor on the new mouse image
+	gameDisplay.blit(new_cursor,(mx, my)) #blits the new mouse image on the screen at the current mouse coords
 
 def message_to_screen(msg, color): # example when calling function: ("This is a message in red", red)
 
@@ -124,26 +141,25 @@ def main():
 		gameDisplay.blit(hot_img, (0, 500)) #blits the hotkey bar under the room image
 		gameDisplay.blit(h_img, (10, 10)) #blits the heart/hp bar to the upper-left corner
 		
+		# === Mouse on hotkey GUI === #
+
 		mouseBar = pygame.mouse.get_pos() 
-		if 0 + 112 > mouseBar[0] > 0 and 500 + 50 > mouseBar[1] > 500:
-			gameDisplay.blit(h_lookB, (0, 500))
-		else:
-			gameDisplay.blit(lookB, (0, 500)) 
-		#This code is pretty complicated and I barely understand it myself. All in all, if your mouse hovers over the
-		# coordinates of the "Look" button, it will change to a lighter-colored image. It does so by first storing both 
-		# x, y coords of the mouse in mouseBar. Then... it's hard to explain the next part. 
-		# https://youtu.be/1hlaMPzAUZ0?t=225 - if you want to see for yourself.
+		if 0 + 111 > mouseBar[0] > 0 and 500 + 50 > mouseBar[1] > 500: #If mouse coords are within the "Look" button coords then:
+			gameDisplay.blit(h_lookB, (0, 500)) #Turns the "Look" button to a lighter color, i.e highlights it.
+			mouse_cursor(eC) #calls the mouse_cursor function, turns the mouse cursor invisible and replaces it with the eyeball.png
+		elif 113 + 111 > mouseBar[0] > 113 and 500 + 50 > mouseBar[1] > 500:
+			gameDisplay.blit(h_openB, (113, 500))
+			mouse_cursor(oC)
+		elif 226 + 111 > mouseBar[0] > 226 and 500 + 50 > mouseBar[1] > 500:
+			gameDisplay.blit(h_useB, (226, 500))
+			mouse_cursor(cC)
+		else: #if mouse location is NOT within any of the button coords then:
+			gameDisplay.blit(lookB, (0, 500)) #display all the buttons in their normal colors, i.e not highlighted.
+			gameDisplay.blit(openB, (113, 500))
+			gameDisplay.blit(useB, (226, 500))
+			pygame.mouse.set_visible(True) #make the regular mouse cursor visible again
 
-
-		pygame.mouse.set_visible(False) #set the regular mouse cursor to invisible, so we don't see them both 
-		mx, my = pygame.mouse.get_pos() #gets the current position of the mouse cursor and stores the coords in mx and my
-		mx -= eC.get_width()/2 
-		my -= eC.get_height()/2 
-		#this centers the mouse cursor on the new mouse image
-		gameDisplay.blit(eC,(mx, my)) #blits the new mouse image on the screen at the current mouse coords
-
-
-		
+	
 		pygame.display.update() #updates all the new changes to the screen
 		clock.tick(FPS) #Checks the variable further up the code for how many times the loop will cycle each second. 
 
