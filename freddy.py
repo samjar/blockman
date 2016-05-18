@@ -18,12 +18,15 @@ room1_img = pygame.image.load(backgroundImage)
 
 hotkey_bar = "GUI_images/hotkey_bar.png" #the entire hotkey bar. Gonna split all the buttons up individually, but for now it's all one big image.
 heart_image = "GUI_images/heart.png" #HP bar image of a heart. Will sit in the upper-left corner.
-look_button = "GUI_images/button_look.png"
+button_look = "GUI_images/button_look.png" #image that will show when button is inactive.
+hover_button_look = "GUI_images/hover_button_look.png" #image shown when button is hovered over.
 
 
 hot_img = pygame.image.load(hotkey_bar)
 h_img = pygame.image.load(heart_image) 
-lookB = pygame.image.load(look_button)
+lookB = pygame.image.load(button_look)
+h_lookB = pygame.image.load(hover_button_look)
+
 
 # === Mouse Cursors === #
 
@@ -120,9 +123,17 @@ def main():
 		gameDisplay.blit(room1_img, (0, 0)) #blits the room image on top of the blank screen 
 		gameDisplay.blit(hot_img, (0, 500)) #blits the hotkey bar under the room image
 		gameDisplay.blit(h_img, (10, 10)) #blits the heart/hp bar to the upper-left corner
-		gameDisplay.blit(lookB, (0, 500)) #blits the look button on top of the hotkey bar (hotkey image will be replaced entirely by buttons eventually)
+		
+		mouseBar = pygame.mouse.get_pos() 
+		if 0 + 112 > mouseBar[0] > 0 and 500 + 50 > mouseBar[1] > 500:
+			gameDisplay.blit(h_lookB, (0, 500))
+		else:
+			gameDisplay.blit(lookB, (0, 500)) 
+		#This code is pretty complicated and I barely understand it myself. All in all, if your mouse hovers over the
+		# coordinates of the "Look" button, it will change to a lighter-colored image. It does so by first storing both 
+		# x, y coords of the mouse in mouseBar. Then... it's hard to explain the next part. 
+		# https://youtu.be/1hlaMPzAUZ0?t=225 - if you want to see for yourself.
 
-		# === Mouse Icon Change === #
 
 		pygame.mouse.set_visible(False) #set the regular mouse cursor to invisible, so we don't see them both 
 		mx, my = pygame.mouse.get_pos() #gets the current position of the mouse cursor and stores the coords in mx and my
