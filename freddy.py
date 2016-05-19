@@ -18,23 +18,30 @@ room1_img = pygame.image.load(backgroundImage)
 
 hotkey_bar = "GUI_images/hotkey_bar.png" #the entire hotkey bar. Gonna split all the buttons up individually, but for now it's all one big image.
 heart_image = "GUI_images/heart.png" #HP bar image of a heart. Will sit in the upper-left corner.
+
 button_look = "GUI_images/button_look.png" #image that will show when button is inactive.
 button_open = "GUI_images/button_open.png"
 button_use = "GUI_images/button_use.png"
+button_go = "GUI_images/button_go.png"
+
 hover_button_look = "GUI_images/hover_button_look.png" #image shown when button is hovered over.
 hover_button_open = "GUI_images/hover_button_open.png"
 hover_button_use = "GUI_images/hover_button_use.png"
+hover_button_go = "GUI_images/hover_button_go.png"
 
 
 hot_img = pygame.image.load(hotkey_bar)
 h_img = pygame.image.load(heart_image) 
+
 lookB = pygame.image.load(button_look)
 openB = pygame.image.load(button_open)
 useB = pygame.image.load(button_use)
+goB = pygame.image.load(button_go)
+
 h_lookB = pygame.image.load(hover_button_look)
 h_openB = pygame.image.load(hover_button_open)
 h_useB = pygame.image.load(hover_button_use)
-
+h_goB = pygame.image.load(hover_button_go)
 
 # === Mouse Cursors === #
 
@@ -42,14 +49,14 @@ eyeball_cursor = "mouse_cursors/eyeball.png" #cursor for when "Look" is selected
 open_cursor = "mouse_cursors/open.png"
 cogwheel_cursor = "mouse_cursors/cogwheel.png"
 #TAKE cursor
-#GO cursor
+arrow_cursor = "mouse_cursors/arrow.png"
 #HIT cursor
 
 eC = pygame.image.load(eyeball_cursor)
 oC = pygame.image.load(open_cursor)
 cC = pygame.image.load(cogwheel_cursor)
 # tC = pygame.image.load(take_cursor)
-# gC = pygame.image.load(go_cursor)
+gC = pygame.image.load(arrow_cursor)
 # hC = pygame.image.load(hit_cursor)
 
 # === Create Window === #
@@ -79,14 +86,33 @@ font = pygame.font.SysFont(None, 25) #defines the font used in text for our game
 
 #######################################################################################################################################################################################
 
-def mouse_cursor(new_cursor):
- 
- 	pygame.mouse.set_visible(False) #set the regular mouse cursor to invisible, so we don't see them both                  <<< NOT WORKING >>>
-	mx, my = pygame.mouse.get_pos() #gets the current position of the mouse cursor and stores the coords in mx and my
+def GUI_buttons(x, w, y, h, button, new_cursor, button2):
+
+	#I wanted the mouse cursor to stay the same after you stop holding the button down. So I made the else condition at the end only turn the mouse cursor back to visible
+	# if regMouseOff was set to 0. The plan was that once you actually click the button, regMouseOff gets set to 1, thus skipping the else condition.
+	#BUT.... if I do that it gives me crap about how "refMouseOff is referenced before assignement" no matter what I do. The only solution I've found to this is 
+	# to define regMouseOff = 0 at the beginning of the function... but then the else condition is always running, therefor once you stop holding the mouse-button
+	# down, the new mouse cursor disappears and gets replaced with the default one. Uggggggghhhhh!
+	regMouseOff = 0
+	click = pygame.mouse.get_pressed() #stores the mouse buttons being pressed into click.
+	mouseBar = pygame.mouse.get_pos() #stores the current mouse position into mouseBar.
+	mx, my = pygame.mouse.get_pos() #stores the current mouse position into mx, and my.
 	mx -= new_cursor.get_width()/2 
 	my -= new_cursor.get_height()/2 
-	#this centers the mouse cursor on the new mouse image
-	gameDisplay.blit(new_cursor,(mx, my)) #blits the new mouse image on the screen at the current mouse coords
+	#Gets the center of the new cursor image.
+	if x + w > mouseBar[0] > x and y + h > mouseBar[1] > y: 
+	#Kinda hard to explain. Basically, if the button's x coord and width is larger than the mouse's current x coord and if THAT is larger than the x coord of the button
+	# AAAAND the button's y coord and height is larger than the mouse coord and if THAT is larger than the y coord of the button, THEN:
+		gameDisplay.blit(button, (x, y))
+		#places the highlighted button image at the x, y location specified in the main() loop below when GUI_buttons is called.
+		if click[0] == 1: #[0] is the left-clicker, [1] the middle, [2] the right-clicker.
+			pygame.mouse.set_visible(False) #makes the default mouse cursor invisible (DOESN'T WORK AT THE MOMENT)       	
+			gameDisplay.blit(new_cursor,(mx, my))
+			regMouseOff = 1
+	else:
+		if regMouseOff == 0:
+			gameDisplay.blit(button2, (x, y))
+			pygame.mouse.set_visible(True)
 
 def message_to_screen(msg, color): # example when calling function: ("This is a message in red", red)
 
@@ -143,21 +169,18 @@ def main():
 		
 		# === Mouse on hotkey GUI === #
 
-		mouseBar = pygame.mouse.get_pos() 
-		if 0 + 111 > mouseBar[0] > 0 and 500 + 50 > mouseBar[1] > 500: #If mouse coords are within the "Look" button coords then:
-			gameDisplay.blit(h_lookB, (0, 500)) #Turns the "Look" button to a lighter color, i.e highlights it.
-			mouse_cursor(eC) #calls the mouse_cursor function, turns the mouse cursor invisible and replaces it with the eyeball.png
-		elif 113 + 111 > mouseBar[0] > 113 and 500 + 50 > mouseBar[1] > 500:
-			gameDisplay.blit(h_openB, (113, 500))
-			mouse_cursor(oC)
-		elif 226 + 111 > mouseBar[0] > 226 and 500 + 50 > mouseBar[1] > 500:
-			gameDisplay.blit(h_useB, (226, 500))
-			mouse_cursor(cC)
-		else: #if mouse location is NOT within any of the button coords then:
-			gameDisplay.blit(lookB, (0, 500)) #display all the buttons in their normal colors, i.e not highlighted.
-			gameDisplay.blit(openB, (113, 500))
-			gameDisplay.blit(useB, (226, 500))
-			pygame.mouse.set_visible(True) #make the regular mouse cursor visible again
+		GUI_buttons(0, 111, 500, 50, h_lookB, eC, lookB) 
+		GUI_buttons(113, 111, 500, 50, h_openB, oC, openB)
+		GUI_buttons(226, 111, 500, 50, h_useB, cC, useB)
+		GUI_buttons(338, 111, 500, 50, h_goB, gC, goB)
+		#Calls the GUI_buttons function. The numbers are the coordinates, height and width for each of the hotkey buttons.
+		#The h_lookB stuff is the highlighted button that gets drawn if the mouse is within the coords of the button,
+		# and then lookB is the regular colored button that the code draws on the screen if the the mouse.
+		# the eC is the icon the mouse cursor transforms into if you click on each respective button
+		# (Doesn't work properly at the moment! You have to hold the mouse button down and you can't move it out 
+		# of the box. Working on a solution for this.)
+
+		
 
 	
 		pygame.display.update() #updates all the new changes to the screen
