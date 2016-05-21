@@ -74,7 +74,6 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 # ((900, 550), 0, 32). 0 means no anti-aliasing and 32 bit color.
 
 # === Clock/FPS === #
-
 clock = pygame.time.Clock() #puts the pygame clock/fps function into a variable called clock. We'll call it later in the loop function.
 
 FPS = 50 #Sets the Frames Per Second. It's super high by default, and you don't want to waste CPU on a simple so a low number will do. If I understand
@@ -84,6 +83,8 @@ FPS = 50 #Sets the Frames Per Second. It's super high by default, and you don't 
 
 font = pygame.font.SysFont(None, 25) #defines the font used in text for our game. SysFont is one of the default system fonts. Parameters = (name, size, bold = false, italic = false)
 
+
+regMouseOff = 0
 #######################################################################################################################################################################################
 
 def GUI_buttons(x, w, y, h, button, new_cursor, button2):
@@ -93,14 +94,15 @@ def GUI_buttons(x, w, y, h, button, new_cursor, button2):
 	#BUT.... if I do that it gives me crap about how "refMouseOff is referenced before assignement" no matter what I do. The only solution I've found to this is 
 	# to define regMouseOff = 0 at the beginning of the function... but then the else condition is always running, therefor once you stop holding the mouse-button
 	# down, the new mouse cursor disappears and gets replaced with the default one. Uggggggghhhhh!
-	regMouseOff = 0
+	global regMouseOff
+
 	click = pygame.mouse.get_pressed() #stores the mouse buttons being pressed into click.
 	mouseBar = pygame.mouse.get_pos() #stores the current mouse position into mouseBar.
 	mx, my = pygame.mouse.get_pos() #stores the current mouse position into mx, and my.
 	mx -= new_cursor.get_width()/2 
 	my -= new_cursor.get_height()/2 
 	#Gets the center of the new cursor image.
-	if x + w > mouseBar[0] > x and y + h > mouseBar[1] > y: 
+	if x + w > mouseBar[0] > x and y + h > mouseBar[1] > y: # FREDDY EDIT (from now on.... Freddit.): if mouse coordinates is inside the box, then:
 	#Kinda hard to explain. Basically, if the button's x coord and width is larger than the mouse's current x coord and if THAT is larger than the x coord of the button
 	# AAAAND the button's y coord and height is larger than the mouse coord and if THAT is larger than the y coord of the button, THEN:
 		gameDisplay.blit(button, (x, y))
@@ -109,10 +111,16 @@ def GUI_buttons(x, w, y, h, button, new_cursor, button2):
 			pygame.mouse.set_visible(False) #makes the default mouse cursor invisible (DOESN'T WORK AT THE MOMENT)       	
 			gameDisplay.blit(new_cursor,(mx, my))
 			regMouseOff = 1
-	else:
-		if regMouseOff == 0:
+	#Swiched around some statements, and added this so regMouseOff can be turned back to 0
+
+	if click[0] == 0:
+		pygame.mouse.set_visible(True)
+		regMouseOff = 0
+
+	if regMouseOff == 0:
 			gameDisplay.blit(button2, (x, y))
-			pygame.mouse.set_visible(True)
+
+	
 
 def message_to_screen(msg, color): # example when calling function: ("This is a message in red", red)
 
@@ -127,7 +135,6 @@ def message_to_screen(msg, color): # example when calling function: ("This is a 
 	#It's worth noting that even after all this, nothing will show up on the screen. NOW you have to type pygame.display.update(), but we do that further below. 
 
 def main():
-
 	gameExit = False #Lets you exit the loop if you press the X.
 	gameOver = False #the game over screen. False by default until certain criteria is met (hp < 0, etc). From the gameover screen you can decide if you want to play again.
 
