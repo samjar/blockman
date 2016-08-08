@@ -83,18 +83,21 @@ class Player(Entity):
 					for now. Lemme know if you can think of a solution. """
 					self.rect.left = 32
 					self.rect.top = 32
+			
 
 				# re-locates player to the outside of platform x, y 
 				# coords if player passes its boundaries
-				if speed_x > 0:
+				# FREDDIT: changed to elif so that these do not execute
+				# unless previous statements are false.
+				elif speed_x > 0:
 					self.rect.right = p.rect.left
-				if speed_x < 0:
+				elif speed_x < 0:
 					self.rect.left = p.rect.right
-				if speed_y > 0:
+				elif speed_y > 0:
 					self.rect.bottom = p.rect.top
 					self.onGround = True
 					self.speed_y = 0
-				if speed_y < 0:
+				elif speed_y < 0:
 					self.rect.top = p.rect.bottom
 					# - add the code in the comment below to disable "ceiling gliding"
 					# - thus making the game much harder.
