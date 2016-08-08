@@ -1,11 +1,13 @@
 import pygame
 import time 
 
-# import mousestates
+
 from statemachine import StateMachine
 
 leftClick = False
 
+# So this class is essentially the GUI function you made. I needed objects
+# with the code for.. reasons? Something to do with the statemachine.
 class GUIButtons():
 
 	def __init__(self, x, w, y, h, hLightButton, newCursor, button):
@@ -19,22 +21,24 @@ class GUIButtons():
 
 		self.cursorWidth = newCursor.get_width()
 		self.cursorHeight = newCursor.get_height()
-		# self.cursorCenter = (self.cursor.get_width())/2, (self.cursor.get_height())/2
 		self.cursorCenter = (self.cursorWidth/2, self.cursorHeight/2)
-		# print(self.cursorCenter)
 
-
-
-	def blitButton(self, *mouseXY):
-		if (self.x, self.y) < mouseXY < (self.x+self.width, self.y+self.height):
-			gameDisplay.blit(self.hLightButton, (self.x, self.y))
-		else:
-			gameDisplay.blit(self.button, (self.x, self.y))
+	def blitButton(self, mouseXY):
+		mouseX = mouseXY[0]
+		mouseY = mouseXY[1]
+		# if (self.x < mouseX < (self.x+self.width)
+		# and self.y < mouseY):
+		# 	gameDisplay.blit(self.hLightButton, (self.x, self.y))
+		# else:
+		# 	gameDisplay.blit(self.button, (self.x, self.y))
+		gameDisplay.blit(self.hLightButton, (self.x, self.y))
 
 	def blitCursor(self, cursor, curcenter, mouseXY):
 		x = mouseXY[0] - curcenter[0]
 		y = mouseXY[1] - curcenter[1]
 		gameDisplay.blit(cursor, (x, y))
+
+# === STATES === #
 
 def stateDefault(isClick, *mouseXY):
 	# First we check if a transition should be made.
@@ -42,8 +46,15 @@ def stateDefault(isClick, *mouseXY):
 	if isClick == True and mouseXY[1] > 500:
 		for coord, button in buttonDict.iteritems():
 			# Checks this condition for every button in the dictionary.
+			# A dictionary consists of pairs of keys and values, and here
+			# a for loop is used to go through all of the pairs.
+			# the current iterations key value is stored in coord; the 
+			# value it's linked to is stored in button.
 			if coord[0] < mouseXY[0] < coord[0] + coord[1]:
-				theMachine.nextState = theMachine.states[button]
+				# "If the coordinates of the mouse click were inside the
+				# buttons edges, then make the state linked to this button
+				# the next state."
+				buttonStateMachine.nextState = buttonStateMachine.states[button]
 				break
 
 	pygame.mouse.set_visible(True)
@@ -52,16 +63,13 @@ def stateDefault(isClick, *mouseXY):
 			if coord[0] < mouseXY[0] < coord[0] + coord[1]:
 				button.blitButton(mouseXY)
 
-
-
 def stateLook(isClick, *mouseXY):
 	if isClick == True:
-		# check event coordinates, run looking code
 
 		# As it is, the default state is the only state that 
 		# has to switch to multiple different states. 
 		# The others only go back to stateDefault.
-		theMachine.nextState = theMachine.states['default']		
+		buttonStateMachine.nextState = buttonStateMachine.states['default']		
 
 	pygame.mouse.set_visible(False)
 	lookButton.blitButton(mouseXY)
@@ -69,7 +77,7 @@ def stateLook(isClick, *mouseXY):
 	
 def stateOpen(isClick, *mouseXY):
 	if isClick == True:
-		theMachine.nextState = theMachine.states['default']
+		buttonStateMachine.nextState = buttonStateMachine.states['default']
 
 	pygame.mouse.set_visible(False)
 	openButton.blitButton(mouseXY)
@@ -78,7 +86,7 @@ def stateOpen(isClick, *mouseXY):
 
 def stateUse(isClick, *mouseXY):
 	if isClick == True:
-		theMachine.nextState = theMachine.states['default']
+		buttonStateMachine.nextState = buttonStateMachine.states['default']
 
 	pygame.mouse.set_visible(False)
 	useButton.blitButton(mouseXY)
@@ -87,13 +95,14 @@ def stateUse(isClick, *mouseXY):
 
 def stateGo(isClick, *mouseXY):
 	if isClick == True:
-		theMachine.nextState = theMachine.states['default']
+		buttonStateMachine.nextState = buttonStateMachine.states['default']
 
 	pygame.mouse.set_visible(False)
 	goButton.blitButton(mouseXY)
 	goButton.blitCursor(goButton.cursor, 
 							goButton.cursorCenter, mouseXY)
 
+pygame.mixer.pre_init()
 pygame.init() #initializes pygame. A must for every pygame program.
 
 WHITE = (255, 255, 255)
@@ -103,10 +112,15 @@ RED = (255, 0, 0)
 #defining the colors ahead of time so I can easily call them when needed.
 
 # === Init Stuff === #
-theMachine = StateMachine()
-theMachine.activeState = stateDefault
-theMachine.nextState = stateDefault
-theMachine.states = {
+
+# Here the statemachine object is created. 
+# stateDefault is set to be run as the first state.
+buttonStateMachine = StateMachine()
+buttonStateMachine.activeState = stateDefault
+buttonStateMachine.nextState = stateDefault
+# The different state functions are added to the states dictionary.
+# the left part is the key, the right part the value
+buttonStateMachine.states = {
 	'default': stateDefault,
     'lookButton': stateLook,
     'openButton': stateOpen,
@@ -199,6 +213,10 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 # are required for the width and height. There are two more parameters if we want them, anti-aliasing and bit color. For example:
 # ((900, 550), 0, 32). 0 means no anti-aliasing and 32 bit color.
 
+# # === SOUNDS === #
+pygame.mixer.init()
+pygame.mixer.music.load("music/Chippin.mp3")
+
 # === Clock/FPS === #
 clock = pygame.time.Clock() #puts the pygame clock/fps function into a variable called clock. We'll call it later in the loop function.
 
@@ -227,14 +245,13 @@ def message_to_screen(msg, color): # example when calling function: ("This is a 
 def main():
 	gameExit = False #Lets you exit the loop if you press the X.
 	gameOver = False #the game over screen. False by default until certain criteria is met (hp < 0, etc). From the gameover screen you can decide if you want to play again.
-
+	pygame.mixer.music.play(-1)
 	while not gameExit: #while gameExit is False (which it is until you press the right buttons) run the loop above instead of going to the pygame.quit() code further below.
-		global leftClick
+		
+		# Some variables that we want to be updated with every iteration.
+		# These are then passed as arguments on line 294.
 		leftClick = False
 		mouseX, mouseY = pygame.mouse.get_pos()
-		# iconXY = (mousePosition[0] - cursor.get_width()/2,
-		# 	mouseposition[1] - cursor.get_height()/2)
-
 
 		while gameOver == True:
 			gameDisplay.fill(WHITE) #tells the code to fill the gameDisplay (screen) with the colors assigned to the variable "WHITE".
@@ -259,6 +276,8 @@ def main():
 		for event in pygame.event.get(): 
 			if event.type == pygame.QUIT: #if the X is press it exits the game.
 				gameExit = True
+			# Checks when the left mouse button is released, but could use
+			# MOUSEBUTTONDOWN to check when it is pressed down as well.
 			elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
 				leftClick = True 
 
@@ -274,20 +293,13 @@ def main():
 		gameDisplay.blit(hot_img, (0, 500)) #blits the hotkey bar under the room image
 		gameDisplay.blit(h_img, (10, 10)) #blits the heart/hp bar to the upper-left corner
 		
-		# theMachine.states[theMachine.activeState](leftClick, mouseX, mouseY)
-
-		runState = theMachine.activeState(leftClick, mouseX, mouseY)		
+		# Run the state function that is at the moment stored in activeState.
+		# We also pass the leftClick, mouseX, mouseY values into the function.
+		# If we start using more than left click, we'd pass variables that store
+		# those button presses or whatever into the function as well.
+		runState = buttonStateMachine.activeState(leftClick, mouseX, mouseY)		
 		
-		#Calls the GUI_buttons function. explanation of arguments in order:
-			# x coordinate
-			# width
-			# y coordinate
-			# height 
-			# h_lookB is the highlighted button
-			# eC is the icon the mouse changes into
-			# lookB is the regular button
-		
-		theMachine.switchState()
+		buttonStateMachine.switchState() # SWITCH STATE YEAAAAAAAAH
 		pygame.display.update() #updates all the new changes to the screen
 		clock.tick(FPS) #number of loop iterations/second
 
