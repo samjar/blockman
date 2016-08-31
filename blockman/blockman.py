@@ -6,6 +6,8 @@ from levels import *
 # - imports the pygame module into the "pygame" namespace.
 from pygame import *
 
+from blockmanlevels import BlockManLevels
+
 WIN_WIDTH = 960
 WIN_HEIGHT = 640
 HALF_WIDTH = int(WIN_WIDTH / 2)
@@ -30,7 +32,7 @@ mixer.music.load("mathgrant_Space_Blocks.mp3")
 
 """ starts main function """
 def main():
-	
+
 	gameDisplay = display.set_mode(DISPLAY, FLAGS, DEPTH)
 	display.set_caption("The Incredible Block Man!")
 	clock = time.Clock()
@@ -57,29 +59,12 @@ def main():
 	# - defines x, y
 	x = y = 0
 
-	level = [
-	"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-	"P P                          P",
-	"P P    PPP          P      P P",
-	"P P P       P    P     P   P P",
-	"P P              P     P   P P",
-	"P P      D                 P P",
-	"P P    PPPPPP             PP P",
-	"P P   PPPPPPP  PPP    DP   P P",
-	"P P   PPPPPPP  PPP PPPPPPPPP P",
-	"P P PPPPPPPPP  PPP P         P",
-	"P P      PPPP  PPP P         P",
-	"P P      PPPP  PPP P         P",
-	"P P         P  PPP P         P",
-	"P P         P      PP    PPPDP",
-	"P PJPPPP    P  PPPPPPP  PPPPPP",
-	"P PPPPP    PP  PPP       P   P",
-	"P           P  PPP    PPPP   P",
-	"P       P   P  PPP  D        P",
-	"P     PPPD     PPP         E P",
-	"PPPPPPPPPPPPPPJPPPPPPPPPPPPPPP"]
+	""" current level stored here """
+	# - Access map for current level
+	current_level = BlockManLevels.current_level
+	level = BlockManLevels.levels[current_level]
 
-
+	# TODO: Make this code a function that can be run whenever the level changes.
 	""" build the level """
 	# - checks each row and column
 	for row in level:
@@ -93,6 +78,10 @@ def main():
 				e = ExitBlock(x, y)
 				platforms.append(e)
 				entities.add(e)
+			if col == "C":
+				c = ClearStageBlock(x, y)
+				platforms.append(c)
+				entities.add(c)
 			if col == "D":
 				d = DeathBlock(x, y)
 				platforms.append(d)
@@ -114,9 +103,9 @@ def main():
 	while 1:
 		clock.tick(60)
 		for event in pygame.event.get():
-			if event.type == QUIT: 
+			if event.type == QUIT:
 				raise SystemExit, "QUIT"
-			if event.type == KEYDOWN and event.key == K_ESCAPE: 
+			if event.type == KEYDOWN and event.key == K_ESCAPE:
 				raise SystemExit, "ESCAPE"
 			if event.type == KEYDOWN and event.key == K_UP:
 				up = True
@@ -126,7 +115,7 @@ def main():
 				left = True
 			if event.type == KEYDOWN and event.key == K_RIGHT:
 				right = True
-			
+
 			if event.type == KEYUP and event.key == K_UP:
 				up = False
 			if event.type == KEYUP and event.key == K_DOWN:
@@ -168,7 +157,7 @@ def simple_camera(camera, target_rect):
     _, _, w, h = camera
     return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
 
-""" the complex camera is supposed to adjust itself if you're at a wall, ceiling, floor, etc 
+""" the complex camera is supposed to adjust itself if you're at a wall, ceiling, floor, etc
 but doesn't work properly at the moment """
 def complex_camera(camera, target_rect):
     l, t, _, _ = target_rect
@@ -241,6 +230,11 @@ class Player(Entity):
 				# - I don't really understand isistance. Yeaaaaah
 				if isinstance(p, ExitBlock):
 					event.post(event.Event(QUIT))
+				elif isinstance(p, ClearStageBlock):
+					BlockManLevels.current_level += 1
+					print BlockManLevels.current_level
+					self.rect.left = 32
+					self.rect.top = 32
 				elif isinstance(p, DeathBlock):
 					mixer.Sound.play(soundHurt)
 					time.delay(300)
@@ -257,7 +251,7 @@ class Player(Entity):
 						pass
 
 
-				# re-locates player to the outside of platform x, y 
+				# re-locates player to the outside of platform x, y
 				# coords if player passes its boundaries
 				elif speed_x > 0:
 					self.rect.right = p.rect.left
@@ -293,6 +287,11 @@ class ExitBlock(Platform):
 	def __init__(self, x, y):
 		Platform.__init__(self, x, y)
 		self.image.fill(BLUE)
+
+class ClearStageBlock(Platform):
+	def __init__(self, x, y):
+		Platform.__init__(self, x, y)
+		self.image.fill(ORANGE)
 
 """ creates the DeathBlock """
 class DeathBlock(Platform):
