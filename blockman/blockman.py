@@ -6,6 +6,8 @@ from levels import *
 # - imports the pygame module into the "pygame" namespace.
 from pygame import *
 
+from blockmanlevels import BlockManLevels
+
 WIN_WIDTH = 960
 WIN_HEIGHT = 640
 HALF_WIDTH = int(WIN_WIDTH / 2)
@@ -27,6 +29,8 @@ soundHurt = mixer.Sound("hurt.wav")
 soundItem = mixer.Sound("item.wav")
 soundJumpBlock = mixer.Sound("jumpblock.wav")
 mixer.music.load("mathgrant_Space_Blocks.mp3")
+
+
 
 """ starts main function """
 def main():
@@ -57,58 +61,53 @@ def main():
 	# - defines x, y
 	x = y = 0
 
-	level = [
-	"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-	"P P                          P",
-	"P P    PPP          P      P P",
-	"P P P       P    P     P   P P",
-	"P P              P     P   P P",
-	"P P      D                 P P",
-	"P P    PPPPPP             PP P",
-	"P P   PPPPPPP  PPP    DP   P P",
-	"P P   PPPPPPP  PPP PPPPPPPPP P",
-	"P P PPPPPPPPP  PPP P         P",
-	"P P      PPPP  PPP P         P",
-	"P P      PPPP  PPP P         P",
-	"P P         P  PPP P         P",
-	"P P         P      PP    PPPDP",
-	"P PJPPPP    P  PPPPPPP  PPPPPP",
-	"P PPPPP    PP  PPP       P   P",
-	"P           P  PPP    PPPP   P",
-	"P       P   P  PPP  D        P",
-	"P     PPPD     PPP         E P",
-	"PPPPPPPPPPPPPPJPPPPPPPPPPPPPPP"]
+	current_level = BlockManLevels.current_level
+	level = BlockManLevels.levels[current_level]
 
+	def build_level(x, y):
 
-	""" build the level """
-	# - checks each row and column
-	for row in level:
-		for col in row:
-			# - turn letters into Platforms, add to list and sprite group
-			if col == "P":
-				p = Platform(x, y)
-				platforms.append(p)
-				entities.add(p)
-			if col == "E":
-				e = ExitBlock(x, y)
-				platforms.append(e)
-				entities.add(e)
-			if col == "D":
-				d = DeathBlock(x, y)
-				platforms.append(d)
-				entities.add(d)
-			if col == "J":
-				j = JumpBlock(x, y)
-				platforms.append(j)
-				entities.add(j)
-			x += 32
-		y += 32
-		x = 0
+		x = y = 0
+
+		entities.add(player)
+
+		current_level = BlockManLevels.current_level
+		level = BlockManLevels.levels[current_level]
+
+		""" build the level """
+		# - checks each row and column
+		for row in level:
+			for col in row:
+				# - turn letters into Platforms, add to list and sprite group
+				if col == "P":
+					p = Platform(x, y)
+					platforms.append(p)
+					entities.add(p)
+				if col == "E":
+					e = ExitBlock(x, y)
+					platforms.append(e)
+					entities.add(e)
+				if col == "C":
+					c = ClearStageBlock(x, y)
+					platforms.append(c)
+					entities.add(c)
+				if col == "D":
+					d = DeathBlock(x, y)
+					platforms.append(d)
+					entities.add(d)
+				if col == "J":
+					j = JumpBlock(x, y)
+					platforms.append(j)
+					entities.add(j)
+				x += 32
+			y += 32
+			x = 0
 
 	total_level_width  = len(level)*25
 	total_level_height = len(level)*30
 	camera = Camera(simple_camera, total_level_width, total_level_height)
 	entities.add(player)
+
+	build_level(x, y)
 
 	# - create the game loop
 	while 1:
@@ -136,20 +135,29 @@ def main():
 			if event.type == KEYUP and event.key == K_RIGHT:
 				right = False
 
+
 		# - draws background
 		for y in range(20):
 			for x in range(30):
 				gameDisplay.blit(bg, (x * 32, y *32))
 
+
 		camera.update(player)
+
+		if player.endStage == True:
+			entities.empty()
+			platforms = []
+			build_level(x, y)
+			player.endState = False
 
 		# - updates player, then draws everything
 		player.update(up, down, left, right, platforms)
 		for e in entities:
 			gameDisplay.blit(e.image, camera.apply(e))
 
+
 		#entities.draw(gameDisplay)
-		pygame.display.flip()
+		pygame.display.update()
 
 class Camera(object):
     def __init__(self, camera_func, width, height):
@@ -200,6 +208,7 @@ class Player(Entity):
 		self.image.convert()
 		self.image.fill(RED)
 		self.rect = Rect(x, y, 32, 32)
+		self.endStage = False
 
 	def update(self, up, down, left, right, platforms):
 		if up:
@@ -241,6 +250,12 @@ class Player(Entity):
 				# - I don't really understand isistance. Yeaaaaah
 				if isinstance(p, ExitBlock):
 					event.post(event.Event(QUIT))
+				elif isinstance(p, ClearStageBlock):				
+					self.endStage = True
+					BlockManLevels.current_level += 1
+					print BlockManLevels.current_level
+					self.rect.left = 32
+					self.rect.top = 32
 				elif isinstance(p, DeathBlock):
 					mixer.Sound.play(soundHurt)
 					time.delay(300)
@@ -294,6 +309,11 @@ class ExitBlock(Platform):
 		Platform.__init__(self, x, y)
 		self.image.fill(BLUE)
 
+class ClearStageBlock(Platform):
+	def __init__(self, x, y):
+		Platform.__init__(self, x, y)
+		self.image.fill(ORANGE)
+
 """ creates the DeathBlock """
 class DeathBlock(Platform):
 	def __init__(self, x, y):
@@ -304,7 +324,6 @@ class JumpBlock(Platform):
 	def __init__(self, x, y):
 		Platform.__init__(self, x, y)
 		self.image.fill(PINK)
-
 
 # - runs the main function
 if(__name__ == "__main__"):
