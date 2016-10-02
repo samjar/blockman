@@ -39,7 +39,14 @@ def main():
 	display.set_caption("The Incredible Block Man!")
 	clock = time.Clock()
 
+	mixer.music.set_volume(0.5)
 	mixer.music.play(1)
+
+	soundJump.set_volume(0.3)
+	soundFall.set_volume(0.3)
+	soundHurt.set_volume(0.3)
+	soundItem.set_volume(0.3)
+	soundJumpBlock.set_volume(0.3)
 
 	# - sets arrow keys being pressed to OFF
 	up = down = left = right = False
@@ -98,6 +105,14 @@ def main():
 					j = JumpBlock(x, y)
 					platforms.append(j)
 					entities.add(j)
+				if col == "H":
+					h = HiddenBlock(x, y)
+					platforms.append(h)
+					entities.add(h)
+				if col == "F":
+					f = FakeBlock(x, y)
+					platforms.append(f)
+					entities.add(f)
 				x += 32
 			y += 32
 			x = 0
@@ -105,7 +120,6 @@ def main():
 	total_level_width  = len(level)*25
 	total_level_height = len(level)*30
 	camera = Camera(simple_camera, total_level_width, total_level_height)
-	entities.add(player)
 
 	build_level(x, y)
 
@@ -138,7 +152,7 @@ def main():
 
 		# - draws background
 		for y in range(20):
-			for x in range(30):
+			for x in range(50):
 				gameDisplay.blit(bg, (x * 32, y *32))
 
 
@@ -154,6 +168,7 @@ def main():
 		player.update(up, down, left, right, platforms)
 		for e in entities:
 			gameDisplay.blit(e.image, camera.apply(e))
+
 
 
 		#entities.draw(gameDisplay)
@@ -208,6 +223,7 @@ class Player(Entity):
 		self.image.convert()
 		self.image.fill(RED)
 		self.rect = Rect(x, y, 32, 32)
+
 		self.endStage = False
 
 	def update(self, up, down, left, right, platforms):
@@ -270,7 +286,9 @@ class Player(Entity):
 						jump_func(self, 15)
 					else:
 						pass
-
+				elif isinstance(p, FakeBlock):
+					pass
+					
 
 				# re-locates player to the outside of platform x, y 
 				# coords if player passes its boundaries
@@ -324,6 +342,17 @@ class JumpBlock(Platform):
 	def __init__(self, x, y):
 		Platform.__init__(self, x, y)
 		self.image.fill(PINK)
+
+class HiddenBlock(Platform):
+	def __init__(self, x, y):
+		Platform.__init__(self, x, y)
+		self.image.fill(BLACK)
+
+class FakeBlock(Platform):
+	def __init__(self, x, y):
+		Platform.__init__(self, x, y)
+		self.image.fill(WHITE)
+
 
 # - runs the main function
 if(__name__ == "__main__"):
