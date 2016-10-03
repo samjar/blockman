@@ -1,7 +1,6 @@
 import pygame
 import math
 from color import *
-from levels import *
 
 # - imports the pygame module into the "pygame" namespace.
 from pygame import *
@@ -28,6 +27,8 @@ soundFall = mixer.Sound("fall.wav")
 soundHurt = mixer.Sound("hurt.wav")
 soundItem = mixer.Sound("item.wav")
 soundJumpBlock = mixer.Sound("jumpblock.wav")
+soundStompCharge = mixer.Sound("stompcharge.wav")
+soundStomp = mixer.Sound("stomp.wav")
 mixer.music.load("mathgrant_Space_Blocks.mp3")
 
 blockLevels = BlockManLevels()
@@ -47,6 +48,8 @@ def main():
 	soundHurt.set_volume(0.3)
 	soundItem.set_volume(0.3)
 	soundJumpBlock.set_volume(0.3)
+	soundStompCharge.set_volume(0.3)
+	soundStomp.set_volume(0.3)
 
 	# - sets arrow keys being pressed to OFF
 	up = down = left = right = False
@@ -174,6 +177,9 @@ def main():
 		#entities.draw(gameDisplay)
 		pygame.display.update()
 
+
+
+
 class Camera(object):
     def __init__(self, camera_func, width, height):
         self.camera_func = camera_func
@@ -223,7 +229,12 @@ class Player(Entity):
         self.image.convert()
         self.image.fill(RED)
         self.rect = Rect(x, y, 32, 32)
+
         self.endStage = False
+        self.glideOn = False
+        self.stompCharge = False
+
+        self.stupidOnGround = False
 
     # TODO: create code to easier change gravity, player movement
     # and also easier to implement new 'physics'.
@@ -232,19 +243,30 @@ class Player(Entity):
             # - only jump if on the ground
             print self.onGround
             if self.onGround:
+            	self.stupidOnGround = False
                 mixer.Sound.play(soundJump)
                 self.jump_func(7, blockLevels.gravityDirection)
         if down:
-            # - pressing down doesn't do anything yet
-            pass
+        	if self.stompCharge is True:
+        		pass
+        	else:
+	        	if not self.onGround:
+	        		self.stomp_func(10, blockLevels.gravityDirection)
+	            # - pressing down doesn't do anything yet
+	            #pass
         if left:
-            self.move_left(blockLevels.gravityDirection)
+        	if self.stompCharge is True:
+        		self.speed_x = 0
+        	else:
+				self.move_left(blockLevels.gravityDirection)
         if right:
-            self.move_right(blockLevels.gravityDirection)
+        	if self.stompCharge is True:
+        		self.speed_x = 0
+        	else:
+				self.move_right(blockLevels.gravityDirection)
         if not self.onGround:
             # function defined at line 292
-            self.apply_gravity(
-                blockLevels.gravity, blockLevels.gravityDirection)
+            self.apply_gravity(blockLevels.gravity, blockLevels.gravityDirection)
             # # - if player is in air, add gravity
         if not(left or right):
             self.stop_moving(blockLevels.gravityDirection)
@@ -255,16 +277,25 @@ class Player(Entity):
         # - increase in y direction
         self.rect.top += self.speed_y
         # - assuming we're in the air
-        self.onGround = False
+        if self.stupidOnGround is True:
+        	self.onGround = True
+        else:
+        	self.onGround = False
         # - do  y-axis collisions
         self.collide(0, self.speed_y, platforms)
 
+	print("stompCharge = " + str(self.stompCharge))
+	print("onGround = " + str(self.onGround))
 
     """ the collision function """
     def collide(self, speed_x, speed_y, platforms):
         for p in platforms:
             # - check every collision between player and platforms
             if sprite.collide_rect(self, p):
+            	if self.stompCharge is True:
+					mixer.Sound.play(soundStomp)
+					time.delay(50)
+					self.stompCharge = False        	
                 # - I don't really understand isistance. Yeaaaaah
                 if isinstance(p, ExitBlock):
                     event.post(event.Event(QUIT))
@@ -300,8 +331,8 @@ class Player(Entity):
                     #                 p, blockLevels.gravityDirection)
                 elif speed_x < 0:
                     self.rect.left = p.rect.right
-                    # self.onGround = self.isOnGround(
-                    #                 p, blockLevels.gravityDirection)
+                    self.onGround = self.isOnGround(
+                                     p, blockLevels.gravityDirection)
                 elif speed_y > 0:
                     self.rect.bottom = p.rect.top
                     # self.onGround = self.isOnGround(
@@ -315,6 +346,7 @@ class Player(Entity):
                     # - add the code in the comment below to disable "ceiling gliding"
                     # - thus making the game much harder.
                     # self.speed_y = 0
+                self.glideOn = False
 
     # First checks gravity direction, then applies gravity in that direction.
     def apply_gravity(self, gravity, direction):
@@ -340,9 +372,9 @@ class Player(Entity):
     # Gets called when there's no left/right input
     def stop_moving(self, direction):
         if direction == 'down' or direction == 'up':
-            self.speed_x = 0
+			self.speed_x = 0
         else:
-            self.speed_y = 0
+			self.speed_y = 0
 
     # Gets called at left input, acts differently depending on gravity direction
     def move_left(self, direction):
@@ -369,9 +401,23 @@ class Player(Entity):
         elif direction == 'up':
             self.speed_y += jump_height
         elif direction == 'left':
-            self.speed_x += jump_height
+            self.speed_x = jump_height
         elif direction == 'right':
             self.speed_x -= jump_height
+
+    def stomp_func(self, fall_speed, direction):
+    	self.stompCharge = True
+    	self.fall_speed = fall_speed
+    	mixer.Sound.play(soundStompCharge)
+    	time.delay(350)
+    	if direction == 'down':
+    		self.speed_y += fall_speed
+    	elif direction == 'up':
+            self.speed_y -= fall_speed
+        elif direction == 'left':
+            self.speed_x -= fall_speed
+        elif direction == 'right':
+            self.speed_x += fall_speed
 
     # Check if player is on ground. Ground changes depending on
     # current gravity direction.
@@ -384,12 +430,15 @@ class Player(Entity):
                 return True
         elif direction == 'up':
             if self.rect.top == p.rect.bottom:
+            	self.stupidOnGround = True
                 return True
         elif direction == 'left':
             if self.rect.left == p.rect.right:
+            	self.stupidOnGround = True
                 return True
         elif direction == 'right':
             if self.rect.right == p.rect.left:
+            	self.stupidOnGround = True
                 return True
         return False
 
@@ -433,7 +482,6 @@ class FakeBlock(Platform):
 	def __init__(self, x, y):
 		Platform.__init__(self, x, y)
 		self.image.fill(WHITE)
-
 
 # - runs the main function
 if(__name__ == "__main__"):
