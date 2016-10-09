@@ -1,13 +1,13 @@
 class BlockManLevels():
 
     def __init__(self):
-        self.current_level = 0
+        self.current_level = 5
         self.gravity = 0.3
         self.gravityDirection = 'down'
 
     levels = [[
         "PPPPPPPPPPPPPPPPPPPP",
-        "P P                P",
+        "PSP                P",
         "P PC               P",
         "P PPPPPPPP  PPP  P P",
         "P   PP             P",
@@ -20,7 +20,7 @@ class BlockManLevels():
 
         [
         "PPPPPPPPPPPPPPPPPPPP",
-        "P  C   PPPPPPPPPPPPP",
+        "PSPC   PPPPPPPPPPPPP",
         "P PP   PPPPPPPPPPPPP",
         "P                  P",
         "P   P              P",
@@ -28,7 +28,7 @@ class BlockManLevels():
         "P      PPPP        P",
         "P      PPPP        P",
         "P      PPPP     P  P",
-        "P                  P",
+        "P       M          P",
         "PPPPPPPPPPPPPPPPPPPP"],
 
         [
@@ -37,27 +37,15 @@ class BlockManLevels():
         "P             PPPPPPP        PHHHHHHHHHHHHHHHHHHHHHHHHPPPPPP",
         "P          P                 F                             P",
         "P                        HHHHPHHHHHHHHHHHHHHHHHHHHHHHHP    P",
-        "P           D                P                        P   CP",
+        "PS          D                P                        P   CP",
         "PPPPP   PPPPPPPPPPPPP        P                        PPPPPP",
         "P                            P",
-        "P                          C P",
+        "P                         PCPP",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
 
         [
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P                            P",
-        "P             PPPPPPP        P",
-        "P          P                 p",
-        "P                            P",
-        "P           D                P",
-        "PPPPP   PPPPPPPPPPPPP        P",
-        "P                            P",
-        "P                          C P",
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
-
-        [
-        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P P                          P",
+        "PSP                          P",
         "P P    PPP          P      P P",
         "P P P       P    P     P   P P",
         "P P              P     P   P P",
@@ -72,10 +60,69 @@ class BlockManLevels():
         "P   P       P      PP    PPPDP",
         "P    PPP    P  PPPPPPP  PPPPPP",
         "P    PP    PP  PPP       P   P",
-        "P           P  PPP    PPPP   P",
+        "P           P  FFF    PPPP   P",
         "P       P   P  PPP  D        P",
-        "P     PPPD     PPP         C P",
+        "P     PPPD     PPP        PCPP",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
+
+        [
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "P   S                                                    P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                                                        P",
+        "P                      C                                 P",
+        "P   P                  P                                 P",
+        "P   P     P      P     P                                 P",
+        "PDDDPDDDDDPDDDDDDPDDDDDPDDDDDD                           P",
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
+
+                [
+        "PPPPPPPPPPPPPPPPPPPP",
+        "PSPC   PPPPPPPPPPPPP",
+        "P PP   PPPPPPPPPPPPP",
+        "P                  P",
+        "P   P              P",
+        "P            PP    P",
+        "P                  P",
+        "P        P         P",
+        "P    P          P  P",
+        "P       M          P",
+        "PPPPPPPPPPPPPPPPPPPP"],
+
+                [
+        "PPPPPPPPPPPPPPPPPPPP",
+        "PS          P      P",
+        "P  P               P",
+        "P                  P",
+        "P   P              P",
+        "P            PP    P",
+        "P      PPPP        P",
+        "P      PC          P",
+        "P      PPPP     P  P",
+        "P       M          P",
+        "PPPPPPPPPPPPPPPPPPPP"],
+
+                [
+        "PPPPPPPPPPPPPPPPPPPP",
+        "PSPC   PPPPPPPPPPPPP",
+        "P PP   PPPPPPPPPPPPP",
+        "P                  P",
+        "P   P              P",
+        "P            PP    P",
+        "P      PPPP        P",
+        "P      PPPP        P",
+        "P      PPPP     P  P",
+        "P       M          P",
+        "PPPPPPPPPPPPPPPPPPPP"],
+
+
 
     ]
 

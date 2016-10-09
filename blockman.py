@@ -35,147 +35,156 @@ blockLevels = BlockManLevels()
 
 """ starts main function """
 def main():
-	
-	gameDisplay = display.set_mode(DISPLAY, FLAGS, DEPTH)
-	display.set_caption("The Incredible Block Man!")
-	clock = time.Clock()
+    
+    gameDisplay = display.set_mode(DISPLAY, FLAGS, DEPTH)
+    display.set_caption("The Incredible Block Man!")
+    clock = time.Clock()
 
-	mixer.music.set_volume(0.5)
-	mixer.music.play(1)
+    mixer.music.set_volume(0.5)
+    mixer.music.play(1)
 
-	soundJump.set_volume(0.3)
-	soundFall.set_volume(0.3)
-	soundHurt.set_volume(0.3)
-	soundItem.set_volume(0.3)
-	soundJumpBlock.set_volume(0.3)
-	soundStompCharge.set_volume(0.3)
-	soundStomp.set_volume(0.3)
+    soundJump.set_volume(0.3)
+    soundFall.set_volume(0.3)
+    soundHurt.set_volume(0.3)
+    soundItem.set_volume(0.3)
+    soundJumpBlock.set_volume(0.3)
+    soundStompCharge.set_volume(0.3)
+    soundStomp.set_volume(0.3)
 
-	# - sets arrow keys being pressed to OFF
-	up = down = left = right = False
+    # - sets arrow keys being pressed to OFF
+    up = down = left = right = False
 
-	# - creates the background
-	bg = Surface((32, 32))
-	bg.convert()
-	bg.fill(BLACK)
+    # - creates the background
+    bg = Surface((32, 32))
+    bg.convert()
+    bg.fill(BLACK)
 
-	# - make "entities" a sprite group
-	entities = pygame.sprite.Group()
+    # - make "entities" a sprite group
+    entities = pygame.sprite.Group()
 
-	# - creates player
-	player = Player(32, 32)
-	entities.add(player)
+    # - creates player
+    player = Player(32, 32)
+    entities.add(player)
 
-	platforms = []
+    platforms = []
 
-	# - defines x, y
-	x = y = 0
+    # - defines x, y
+    x = y = 0
 
-	current_level = blockLevels.current_level
-	level = blockLevels.levels[current_level]
+    current_level = blockLevels.current_level
+    level = blockLevels.levels[current_level]
 
-	def build_level(x, y):
+    def build_level(x, y, levelPoop = False):
 
-		x = y = 0
+        x = y = 0
 
-		entities.add(player)
+        entities.add(player)
 
-		current_level = blockLevels.current_level
-		level = blockLevels.levels[current_level]
+        current_level = blockLevels.current_level
+        level = blockLevels.levels[current_level]
 
-		""" build the level """
-		# - checks each row and column
-		for row in level:
-			for col in row:
-				# - turn letters into Platforms, add to list and sprite group
-				if col == "P":
-					p = Platform(x, y)
-					platforms.append(p)
-					entities.add(p)
-				if col == "E":
-					e = ExitBlock(x, y)
-					platforms.append(e)
-					entities.add(e)
-				if col == "C":
-					c = ClearStageBlock(x, y)
-					platforms.append(c)
-					entities.add(c)
-				if col == "D":
-					d = DeathBlock(x, y)
-					platforms.append(d)
-					entities.add(d)
-				if col == "J":
-					j = JumpBlock(x, y)
-					platforms.append(j)
-					entities.add(j)
-				if col == "H":
-					h = HiddenBlock(x, y)
-					platforms.append(h)
-					entities.add(h)
-				if col == "F":
-					f = FakeBlock(x, y)
-					platforms.append(f)
-					entities.add(f)
-				x += 32
-			y += 32
-			x = 0
+        """ build the level """
+        # - checks each row and column
+        for row in level:
+            for col in row:
+                # - turn letters into Platforms, add to list and sprite group
+                if col == "P":
+                    p = Platform(x, y)
+                    platforms.append(p)
+                    entities.add(p)
+                if col == "E":
+                    e = ExitBlock(x, y)
+                    platforms.append(e)
+                    entities.add(e)
+                if col == "C":
+                    c = ClearStageBlock(x, y)
+                    platforms.append(c)
+                    entities.add(c)
+                if col == "D":
+                    d = DeathBlock(x, y)
+                    platforms.append(d)
+                    entities.add(d)
+                if col == "J":
+                    j = JumpBlock(x, y)
+                    platforms.append(j)
+                    entities.add(j)
+                if col == "H":
+                    h = HiddenBlock(x, y)
+                    platforms.append(h)
+                    entities.add(h)
+                if col == "F":
+                    f = FakeBlock(x, y)
+                    platforms.append(f)
+                    entities.add(f)
+                if col == "S" and levelPoop == False:
+                    player.rect.left = x
+                    player.rect.top = y
+                x += 32
+            y += 32
+            x = 0
 
-	total_level_width  = len(level)*25
-	total_level_height = len(level)*30
-	camera = Camera(simple_camera, total_level_width, total_level_height)
+    total_level_width  = len(level)*25
+    total_level_height = len(level)*30
+    camera = Camera(simple_camera, total_level_width, total_level_height)
 
-	build_level(x, y)
+    build_level(x, y)
 
-	# - create the game loop
-	while 1:
-		clock.tick(60)
-		for event in pygame.event.get():
-			if event.type == QUIT: 
-				raise SystemExit, "QUIT"
-			if event.type == KEYDOWN and event.key == K_ESCAPE: 
-				raise SystemExit, "ESCAPE"
-			if event.type == KEYDOWN and event.key == K_UP:
-				up = True
-			if event.type == KEYDOWN and event.key == K_DOWN:
-				down = True
-			if event.type == KEYDOWN and event.key == K_LEFT:
-				left = True
-			if event.type == KEYDOWN and event.key == K_RIGHT:
-				right = True
-			
-			if event.type == KEYUP and event.key == K_UP:
-				up = False
-			if event.type == KEYUP and event.key == K_DOWN:
-				down = False
-			if event.type == KEYUP and event.key == K_LEFT:
-				left = False
-			if event.type == KEYUP and event.key == K_RIGHT:
-				right = False
-
-
-		# - draws background
-		for y in range(20):
-			for x in range(50):
-				gameDisplay.blit(bg, (x * 32, y *32))
+    # - create the game loop
+    while 1:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == QUIT: 
+                raise SystemExit, "QUIT"
+            if event.type == KEYDOWN and event.key == K_ESCAPE: 
+                raise SystemExit, "ESCAPE"
+            if event.type == KEYDOWN and event.key == K_UP:
+                up = True
+            if event.type == KEYDOWN and event.key == K_DOWN:
+                down = True
+            if event.type == KEYDOWN and event.key == K_LEFT:
+                left = True
+            if event.type == KEYDOWN and event.key == K_RIGHT:
+                right = True
+            
+            if event.type == KEYUP and event.key == K_UP:
+                up = False
+            if event.type == KEYUP and event.key == K_DOWN:
+                down = False
+            if event.type == KEYUP and event.key == K_LEFT:
+                left = False
+            if event.type == KEYUP and event.key == K_RIGHT:
+                right = False
 
 
-		camera.update(player)
-
-		if player.endStage == True:
-			entities.empty()
-			platforms = []
-			build_level(x, y)
-			player.endState = False
-
-		# - updates player, then draws everything
-		player.update(up, down, left, right, platforms)
-		for e in entities:
-			gameDisplay.blit(e.image, camera.apply(e))
+        # - draws background
+        for y in range(20):
+            for x in range(50):
+                gameDisplay.blit(bg, (x * 32, y *32))
 
 
+        camera.update(player)
 
-		#entities.draw(gameDisplay)
-		pygame.display.update()
+        if player.endStage == True:
+            entities.empty()
+            platforms = []
+            build_level(x, y)
+            player.endStage = False
+
+        if player.endStage2 == True:
+            entities.empty()
+            platforms = []
+            build_level(x, y, True)
+            player.endStage = False
+
+        # - updates player, then draws everything
+        player.update(up, down, left, right, platforms)
+        for e in entities:
+            gameDisplay.blit(e.image, camera.apply(e))
+
+
+
+        #entities.draw(gameDisplay)
+        pygame.display.update()
 
 
 
@@ -213,8 +222,37 @@ def complex_camera(camera, target_rect):
 
 """ create the Entity Class that all platforms/blocks will inherit from """
 class Entity(pygame.sprite.Sprite):
-	def __init__(self):
-		pygame.sprite.Sprite.__init__(self)
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+class Mob(Entity):
+
+    def __init__(self, x, y, pattern):
+        Entity.__init__(self)
+        self.speed_x = 0
+        self.speed_y = 0
+
+        self.image = Surface((32, 32))
+        self.image.convert()
+        self.image.fill(DARKRED)
+        self.rect = Rect(x, y, 32, 32)
+
+        #rand
+        self.mobWalk = 'right'
+
+    def update(self, x, y):
+
+        self.x += self.speed_x 
+        self.y += self.speed_y
+
+        if self.mobWalk == 'right':
+            self.speed_x += 0.3
+            if self.speed_x > 30:
+                self.mobWalk = 'left'
+        elif self.mobWalk == 'left':
+            self.speed_x += -0.3
+            if self.speed_x > -30:
+                self.mobWalk = 'right'
 
 class Player(Entity):
 
@@ -231,6 +269,7 @@ class Player(Entity):
         self.rect = Rect(x, y, 32, 32)
 
         self.endStage = False
+        self.endStage2 = False
         self.glideOn = False
         self.stompCharge = False
 
@@ -243,27 +282,32 @@ class Player(Entity):
             # - only jump if on the ground
             print self.onGround
             if self.onGround:
-            	self.stupidOnGround = False
+                self.stupidOnGround = False
                 mixer.Sound.play(soundJump)
                 self.jump_func(7, blockLevels.gravityDirection)
+
+                blockLevels.current_level += 1
+                if blockLevels.current_level > 7:
+                    blockLevels.current_level = 5
+                self.endStage2 = True
         if down:
-        	if self.stompCharge is True:
-        		pass
-        	else:
-	        	if not self.onGround:
-	        		self.stomp_func(10, blockLevels.gravityDirection)
-	            # - pressing down doesn't do anything yet
-	            #pass
+            if self.stompCharge is True:
+                pass
+            else:
+                if not self.onGround:
+                    self.stomp_func(10, blockLevels.gravityDirection)
+                # - pressing down doesn't do anything yet
+                #pass
         if left:
-        	if self.stompCharge is True:
-        		self.speed_x = 0
-        	else:
-				self.move_left(blockLevels.gravityDirection)
+            if self.stompCharge is True:
+                self.speed_x = 0
+            else:
+                self.move_left(blockLevels.gravityDirection)
         if right:
-        	if self.stompCharge is True:
-        		self.speed_x = 0
-        	else:
-				self.move_right(blockLevels.gravityDirection)
+            if self.stompCharge is True:
+                self.speed_x = 0
+            else:
+                self.move_right(blockLevels.gravityDirection)
         if not self.onGround:
             # function defined at line 292
             self.apply_gravity(blockLevels.gravity, blockLevels.gravityDirection)
@@ -278,24 +322,24 @@ class Player(Entity):
         self.rect.top += self.speed_y
         # - assuming we're in the air
         if self.stupidOnGround is True:
-        	self.onGround = True
+            self.onGround = True
         else:
-        	self.onGround = False
+            self.onGround = False
         # - do  y-axis collisions
         self.collide(0, self.speed_y, platforms)
 
-	print("stompCharge = " + str(self.stompCharge))
-	print("onGround = " + str(self.onGround))
+        print("stompCharge = " + str(self.stompCharge))
+        print("onGround = " + str(self.onGround))
 
     """ the collision function """
     def collide(self, speed_x, speed_y, platforms):
         for p in platforms:
             # - check every collision between player and platforms
             if sprite.collide_rect(self, p):
-            	if self.stompCharge is True:
-					mixer.Sound.play(soundStomp)
-					time.delay(50)
-					self.stompCharge = False        	
+                if self.stompCharge is True:
+                    mixer.Sound.play(soundStomp)
+                    time.delay(50)
+                    self.stompCharge = False            
                 # - I don't really understand isistance. Yeaaaaah
                 if isinstance(p, ExitBlock):
                     event.post(event.Event(QUIT))
@@ -303,13 +347,10 @@ class Player(Entity):
                     self.endStage = True
                     blockLevels.current_level += 1
                     print blockLevels.current_level
-                    self.rect.left = 32
-                    self.rect.top = 32
                 elif isinstance(p, DeathBlock):
                     mixer.Sound.play(soundHurt)
+                    self.endStage = True
                     time.delay(300)
-                    self.rect.left = 32
-                    self.rect.top = 32
                 elif isinstance(p, JumpBlock):
                     if speed_y > 0:
                         # - calls the jump function (doesn't work properly atm)
@@ -372,9 +413,9 @@ class Player(Entity):
     # Gets called when there's no left/right input
     def stop_moving(self, direction):
         if direction == 'down' or direction == 'up':
-			self.speed_x = 0
+            self.speed_x = 0
         else:
-			self.speed_y = 0
+            self.speed_y = 0
 
     # Gets called at left input, acts differently depending on gravity direction
     def move_left(self, direction):
@@ -406,13 +447,13 @@ class Player(Entity):
             self.speed_x -= jump_height
 
     def stomp_func(self, fall_speed, direction):
-    	self.stompCharge = True
-    	self.fall_speed = fall_speed
-    	mixer.Sound.play(soundStompCharge)
-    	time.delay(350)
-    	if direction == 'down':
-    		self.speed_y += fall_speed
-    	elif direction == 'up':
+        self.stompCharge = True
+        self.fall_speed = fall_speed
+        mixer.Sound.play(soundStompCharge)
+        time.delay(350)
+        if direction == 'down':
+            self.speed_y += fall_speed
+        elif direction == 'up':
             self.speed_y -= fall_speed
         elif direction == 'left':
             self.speed_x -= fall_speed
@@ -430,59 +471,59 @@ class Player(Entity):
                 return True
         elif direction == 'up':
             if self.rect.top == p.rect.bottom:
-            	self.stupidOnGround = True
+                self.stupidOnGround = True
                 return True
         elif direction == 'left':
             if self.rect.left == p.rect.right:
-            	self.stupidOnGround = True
+                self.stupidOnGround = True
                 return True
         elif direction == 'right':
             if self.rect.right == p.rect.left:
-            	self.stupidOnGround = True
+                self.stupidOnGround = True
                 return True
         return False
 
 """ creates the platform class, inherit the Entity class """
 class Platform(Entity):
-	def __init__(self, x, y):
-		Entity.__init__(self)
-		self.image = Surface((32, 32))
-		self.image.convert()
-		self.image.fill(WHITE)
-		self.rect = Rect(x, y, 32, 32)
+    def __init__(self, x, y):
+        Entity.__init__(self)
+        self.image = Surface((32, 32))
+        self.image.convert()
+        self.image.fill(WHITE)
+        self.rect = Rect(x, y, 32, 32)
 
 """ creates the ExitBlock, inherit the platform class """
 class ExitBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(BLUE)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(BLUE)
 
 class ClearStageBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(ORANGE)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(ORANGE)
 
 """ creates the DeathBlock """
 class DeathBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(GREEN)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(GREEN)
 
 class JumpBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(PINK)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(PINK)
 
 class HiddenBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(BLACK)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(BLACK)
 
 class FakeBlock(Platform):
-	def __init__(self, x, y):
-		Platform.__init__(self, x, y)
-		self.image.fill(WHITE)
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(WHITE)
 
 # - runs the main function
 if(__name__ == "__main__"):
-	main()
+    main()
