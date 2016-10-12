@@ -1,5 +1,6 @@
 import pygame
 import math
+import random
 from color import *
 
 # - imports the pygame module into the "pygame" namespace.
@@ -29,6 +30,12 @@ soundItem = mixer.Sound("item.wav")
 soundJumpBlock = mixer.Sound("jumpblock.wav")
 soundStompCharge = mixer.Sound("stompcharge.wav")
 soundStomp = mixer.Sound("stomp.wav")
+soundGravityJump = mixer.Sound("bigjump.wav")
+soundBoop1 = mixer.Sound("boop1.wav")
+soundBoop2 = mixer.Sound("boop2.wav")
+soundBoop3 = mixer.Sound("boop3.wav")
+soundBoop4 = mixer.Sound("boop4.wav")
+soundBoop5 = mixer.Sound("boop5.wav")
 mixer.music.load("mathgrant_Space_Blocks.mp3")
 
 blockLevels = BlockManLevels()
@@ -50,6 +57,12 @@ def main():
     soundJumpBlock.set_volume(0.3)
     soundStompCharge.set_volume(0.3)
     soundStomp.set_volume(0.3)
+    soundGravityJump.set_volume(0.3)
+    soundBoop1.set_volume(0.3)
+    soundBoop2.set_volume(0.3)
+    soundBoop3.set_volume(0.3)
+    soundBoop4.set_volume(0.3)
+    soundBoop5.set_volume(0.3)
 
     # - sets arrow keys being pressed to OFF
     up = down = left = right = False
@@ -119,6 +132,15 @@ def main():
                 if col == "S" and levelPoop == False:
                     player.rect.left = x
                     player.rect.top = y
+                if col == "L":
+                    l = LevelWarp(x, y)
+                    platforms.append(l)
+                    entities.add(l)
+                if col == "W":
+                    w = WarpBlock(x, y)
+                    platforms.append(w)
+                    entities.add(w)
+
                 x += 32
             y += 32
             x = 0
@@ -157,7 +179,7 @@ def main():
 
 
         # - draws background
-        for y in range(20):
+        for y in range(50):
             for x in range(50):
                 gameDisplay.blit(bg, (x * 32, y *32))
 
@@ -165,12 +187,14 @@ def main():
         camera.update(player)
 
         if player.endStage == True:
+            blockLevels.level_spex()
             entities.empty()
             platforms = []
             build_level(x, y)
             player.endStage = False
 
         if player.endStage2 == True:
+            blockLevels.level_spex()
             entities.empty()
             platforms = []
             build_level(x, y, True)
@@ -181,12 +205,8 @@ def main():
         for e in entities:
             gameDisplay.blit(e.image, camera.apply(e))
 
-
-
         #entities.draw(gameDisplay)
         pygame.display.update()
-
-
 
 
 class Camera(object):
@@ -205,19 +225,6 @@ def simple_camera(camera, target_rect):
     l, t, _, _ = target_rect
     _, _, w, h = camera
     return Rect(-l+HALF_WIDTH, -t+HALF_HEIGHT, w, h)
-
-""" the complex camera is supposed to adjust itself if you're at a wall, ceiling, floor, etc 
-but doesn't work properly at the moment """
-def complex_camera(camera, target_rect):
-    l, t, _, _ = target_rect
-    _, _, w, h = camera
-    l, t, _, _ = -l+HALF_WIDTH, -t+HALF_HEIGHT, w, h
-
-    l = min(0, l)                           # stop scrolling at the left edge
-    l = max(-(camera.width-WIN_WIDTH), l)   # stop scrolling at the right edge
-    t = max(-(camera.height-WIN_HEIGHT), t) # stop scrolling at the bottom
-    t = min(0, t)                           # stop scrolling at the top
-    return Rect(l, t, w, h)
 
 
 """ create the Entity Class that all platforms/blocks will inherit from """
@@ -280,16 +287,19 @@ class Player(Entity):
     def update(self, up, down, left, right, platforms):
         if up:
             # - only jump if on the ground
-            print self.onGround
+            #print self.onGround
             if self.onGround:
                 self.stupidOnGround = False
-                mixer.Sound.play(soundJump)
+                if blockLevels.current_level == 8:
+                    mixer.Sound.play(soundGravityJump)
+                else:
+                    mixer.Sound.play(soundJump)
                 self.jump_func(7, blockLevels.gravityDirection)
 
-                blockLevels.current_level += 1
-                if blockLevels.current_level > 7:
-                    blockLevels.current_level = 5
-                self.endStage2 = True
+                #blockLevels.current_level += 1
+                #if blockLevels.current_level > 7:
+                #    blockLevels.current_level = 5
+                #self.endStage2 = True
         if down:
             if self.stompCharge is True:
                 pass
@@ -328,8 +338,8 @@ class Player(Entity):
         # - do  y-axis collisions
         self.collide(0, self.speed_y, platforms)
 
-        print("stompCharge = " + str(self.stompCharge))
-        print("onGround = " + str(self.onGround))
+        #print("stompCharge = " + str(self.stompCharge))
+        #print("onGround = " + str(self.onGround))
 
     """ the collision function """
     def collide(self, speed_x, speed_y, platforms):
@@ -345,7 +355,7 @@ class Player(Entity):
                     event.post(event.Event(QUIT))
                 elif isinstance(p, ClearStageBlock):
                     self.endStage = True
-                    blockLevels.current_level += 1
+                    blockLevels.current_level += 1                    
                     print blockLevels.current_level
                 elif isinstance(p, DeathBlock):
                     mixer.Sound.play(soundHurt)
@@ -361,7 +371,25 @@ class Player(Entity):
                     else:
                         pass
                 elif isinstance(p, FakeBlock):
-                    pass
+                    #boop = random.randint(1, 5)
+                    """ sound is supposed to play when you destroy a FakeBlock,
+                    but the sound plays even after the block is gone """
+                    #if boop == 1:
+                    #    mixer.Sound.play(soundBoop1)
+                    #elif boop == 2:
+                    #    mixer.Sound.play(soundBoop2)
+                    #elif boop == 3:
+                    #    mixer.Sound.play(soundBoop3)
+                    #elif boop == 4:
+                    #    mixer.Sound.play(soundBoop4)
+                    #elif boop == 5:
+                    #    mixer.Sound.play(soundBoop5)
+                    p.kill()
+                elif isinstance(p, LevelWarp):
+                    blockLevels.little_warp()
+                elif isinstance(p, WarpBlock):
+                    blockLevels.warp_instance()
+                    self.endStage = True
 
                 # re-locates player to the outside of platform x, y
                 # coords if player passes its boundaries
@@ -483,6 +511,16 @@ class Player(Entity):
                 return True
         return False
 
+        """ prefered function for the FakeBlock isinstance,
+        except it's not working properly at the moment """
+        #def boop_sound(self):
+        #    boop = randrange(1, 5)
+        #    self.boop_function(boop)
+
+        #def boop_function(self, number):
+        #    mixer.Sound.play(soundBoop(number))
+
+
 """ creates the platform class, inherit the Entity class """
 class Platform(Entity):
     def __init__(self, x, y):
@@ -523,6 +561,16 @@ class FakeBlock(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
         self.image.fill(WHITE)
+
+class LevelWarp(Platform):
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(YELLOW)
+
+class WarpBlock(Platform):
+    def __init__(self, x, y):
+        Platform.__init__(self, x, y)
+        self.image.fill(PINK)
 
 # - runs the main function
 if(__name__ == "__main__"):

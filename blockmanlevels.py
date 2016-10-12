@@ -1,16 +1,35 @@
 class BlockManLevels():
 
     def __init__(self):
-        self.current_level = 5
-        self.gravity = 0.3
+        self.current_level = 8
+        self.gravity = 0.15
         self.gravityDirection = 'down'
 
     levels = [[
+
+        "HHHHH",
+        "H   H",
+        "H PFPPPPPPPPPPPPPP",
+        "H P              P",
+        "H PS             P",
+        "H PPP          PCP",
+        "H PPPPPPPPPPPPPPPP",
+        "H H",
+        "H H",
+        "H H",
+        "H H",
+        "H HHHHHHHHHHHHHHHH",
+        "H                H",
+        "H                H",
+        "H                H",
+        "H       PWP      H",
+        "HPPPPPPPPPPPPPPPP"],
+        [
         "PPPPPPPPPPPPPPPPPPPP",
         "PSP                P",
-        "P PC               P",
+        "P PCP              P",
         "P PPPPPPPP  PPP  P P",
-        "P   PP             P",
+        "P   P              P",
         "P   P              P",
         "P   P           PPPP",
         "P            PPPPPPP",
@@ -20,15 +39,15 @@ class BlockManLevels():
 
         [
         "PPPPPPPPPPPPPPPPPPPP",
-        "PSPC   PPPPPPPPPPPPP",
-        "P PP   PPPPPPPPPPPPP",
-        "P                  P",
+        "PSPP               P",
+        "P PP   PPPPPPPPPPPCP",
+        "P                PPP",
         "P   P              P",
         "P            PP    P",
         "P      PPPP        P",
         "P      PPPP        P",
         "P      PPPP     P  P",
-        "P       M          P",
+        "P                  P",
         "PPPPPPPPPPPPPPPPPPPP"],
 
         [
@@ -37,7 +56,7 @@ class BlockManLevels():
         "P             PPPPPPP        PHHHHHHHHHHHHHHHHHHHHHHHHPPPPPP",
         "P          P                 F                             P",
         "P                        HHHHPHHHHHHHHHHHHHHHHHHHHHHHHP    P",
-        "PS          D                P                        P   CP",
+        "PS          D                P                        PPPPWP",
         "PPPPP   PPPPPPPPPPPPP        P                        PPPPPP",
         "P                            P",
         "P                         PCPP",
@@ -67,71 +86,132 @@ class BlockManLevels():
 
         [
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-        "P   S                                                    P",
         "P                                                        P",
         "P                                                        P",
         "P                                                        P",
-        "P                                                        P",
-        "P                                                        P",
-        "P                                                        P",
-        "P                                                        P",
-        "P                                                        P",
-        "P                                                        P",
-        "P                      C                                 P",
-        "P   P                  P                                 P",
-        "P   P     P      P     P                                 P",
-        "PDDDPDDDDDPDDDDDDPDDDDDPDDDDDD                           P",
+        "P                                                 P      P",
+        "P                                                 P      P",
+        "P                                           P     P      P",
+        "P   S                                P      P     P      P",
+        "P   P                  P             P      P     P      P",
+        "P   P     P      P     P        P    P      P     P    PCP",
+        "PDDDPDDDDDPDDDDDDPDDDDDPDDDDDDDDPDDDDPDDDDDDPDDDDDPDDDDPPP",
         "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
 
-                [
-        "PPPPPPPPPPPPPPPPPPPP",
-        "PSPC   PPPPPPPPPPPPP",
-        "P PP   PPPPPPPPPPPPP",
-        "P                  P",
-        "P   P              P",
-        "P            PP    P",
-        "P                  P",
-        "P        P         P",
-        "P    P          P  P",
-        "P       M          P",
-        "PPPPPPPPPPPPPPPPPPPP"],
+        [
+        "PPPPPPPPPPPPPPPPPPPPPHHHHHHH",
+        "P        P         F       H",
+        "P      P P         PHHHHHH H",
+        "P     PP P         P     H H",
+        "P    PPPCP        SP     H H",
+        "PFPPPPPPPPPPPPPPPPPPHHHHHH H",
+        "P                          H",
+        "PPPPPPPPPPPPPPPPPPPPHHHHHHHH"],
 
-                [
-        "PPPPPPPPPPPPPPPPPPPP",
-        "PS          P      P",
-        "P  P               P",
-        "P                  P",
-        "P   P              P",
-        "P            PP    P",
-        "P      PPPP        P",
-        "P      PC          P",
-        "P      PPPP     P  P",
-        "P       M          P",
-        "PPPPPPPPPPPPPPPPPPPP"],
+        [
 
-                [
-        "PPPPPPPPPPPPPPPPPPPP",
-        "PSPC   PPPPPPPPPPPPP",
-        "P PP   PPPPPPPPPPPPP",
-        "P                  P",
-        "P   P              P",
-        "P            PP    P",
-        "P      PPPP        P",
-        "P      PPPP        P",
-        "P      PPPP     P  P",
-        "P       M          P",
-        "PPPPPPPPPPPPPPPPPPPP"],
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "PPPPPPPPPCPPPPPPPPP        P",
+        "PPPPPPPPP     PPPPP  PPP  PP",
+        "PPPPPPP       PPP    PPP   P",
+        "PPPPPP     PPPPD    PPPP   P",
+        "PD         PW PD     PPD   P",
+        "PD         P  PP     PPD   P",
+        "PPPPP    H FFFPPP    PPP   P",
+        "PD         FFFPPPP   PPP   P",
+        "PD         PPPPPPPPP PPPP  P",
+        "PPPPP     PP       P PP    P",
+        "PPPP      PD   PPP P P     P",
+        "PD        P    PPP P P   PPP",
+        "PP             PPP   P    SP",
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
 
+        [
+
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+        "P                                   P",
+        "P      P         P                  P",
+        "P                                   P",
+        "P                              P    P",
+        "P                                   P",
+        "P                   P               P",
+        "P     P                             P",
+        "P                           P       P",
+        "P                                   P",
+        "P            P                      P",
+        "P                                   P",
+        "PPP                        PPPP     P",
+        "P                          DDPPP    P",
+        "P                            DDDPP  P",
+        "P               PPP             DDP P",
+        "P                                 DPP",
+        "P                                  DP",
+        "P                   PPPPP           P",
+        "P         PPP   PPPP    H   P       P",
+        "P            PPP        H   P       P",
+        "PPPP   PPP PP           H   P       P",
+        "P   PPP   P             PPPPP      PP",
+        "P                                   P",
+        "P                                   P",
+        "P             PPPPP                 P",
+        "PP  PP   P                DD     PPPP",
+        "P    P                   DPPDDDPP   P",
+        "P    P               DPPPP  PPP     P",
+        "P   PPF            DDP        P     P",
+        "P    P           DDPP            PP P",
+        "P    P          DPP             PPP P",
+        "PPPFFP    F     P               PPP P",
+        "PFFFPP          P               PPP P",
+        "PFPPPP                          PS  P",
+        "PFPPPPPFFPPPPP  PPPPP          PPPPPP",
+        "PFFFFFFFFP     PPPPPPPDDDDDDDPPPPPPPP",
+        "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"],
 
 
     ]
 
-    def levelTwo(self):
-        self.gravity = 0.2
-        self.gravityDirection = 'left'
+    def level_spex(self):
+        if self.current_level == 0:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 1:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 2:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 3:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 4:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 5:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 6:
+            self.spex_function(0.3, 'down')
+        elif self.current_level == 7:
+            self.spex_function(0.3, 'left')
+        elif self.current_level == 8:
+            self.spex_function(0.15, 'down')
 
-    def level50(self):
-        self.gravityDirection = 'right'
+
+    def spex_function(self, gravity, direction):
+        self.gravity = gravity
+        self.gravityDirection = direction
+
+    def warp_instance(self):
+
+        if self.current_level == 3:
+            self.current_level = 5
+        elif self.current_level == 0:
+            self.current_level = 7
+        elif self.current_level == 7:
+            self.current_level = 20
+        else:
+            pass
+
+    def little_warp(self):
+
+        pass
+
+        #block that warps you in the same level
+
 
 
 if __name__ == "__main__":
