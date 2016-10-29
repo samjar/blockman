@@ -1,8 +1,8 @@
 class BlockManLevels():
 
     def __init__(self):
-        self.current_level = 8
-        self.gravity = 0.15
+        self.current_level = 0
+        self.gravity = 0.3
         self.gravityDirection = 'down'
 
     levels = [[

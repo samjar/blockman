@@ -296,10 +296,11 @@ class Player(Entity):
                     mixer.Sound.play(soundJump)
                 self.jump_func(7, blockLevels.gravityDirection)
 
-                blockLevels.current_level += 1
-                if blockLevels.current_level > 13:
-                    blockLevels.current_level = 9
-                self.endStage2 = True
+                if blockLevels.current_level > 8:
+                    blockLevels.current_level += 1
+                    if blockLevels.current_level > 13:
+                        blockLevels.current_level = 9
+                    self.endStage2 = True
         if down:
             if self.stompCharge is True:
                 pass
