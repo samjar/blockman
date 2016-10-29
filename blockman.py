@@ -179,8 +179,8 @@ def main():
 
 
         # - draws background
-        for y in range(50):
-            for x in range(50):
+        for y in range(60):
+            for x in range(60):
                 gameDisplay.blit(bg, (x * 32, y *32))
 
 
@@ -296,10 +296,10 @@ class Player(Entity):
                     mixer.Sound.play(soundJump)
                 self.jump_func(7, blockLevels.gravityDirection)
 
-                #blockLevels.current_level += 1
-                #if blockLevels.current_level > 7:
-                #    blockLevels.current_level = 5
-                #self.endStage2 = True
+                blockLevels.current_level += 1
+                if blockLevels.current_level > 13:
+                    blockLevels.current_level = 9
+                self.endStage2 = True
         if down:
             if self.stompCharge is True:
                 pass
@@ -361,6 +361,8 @@ class Player(Entity):
                     mixer.Sound.play(soundHurt)
                     self.endStage = True
                     time.delay(300)
+                    self.speed_y = 0
+                    self.speed_x = 0
                 elif isinstance(p, JumpBlock):
                     if speed_y > 0:
                         # - calls the jump function (doesn't work properly atm)
@@ -550,7 +552,7 @@ class DeathBlock(Platform):
 class JumpBlock(Platform):
     def __init__(self, x, y):
         Platform.__init__(self, x, y)
-        self.image.fill(PINK)
+        self.image.fill(JUMPWHITE)
 
 class HiddenBlock(Platform):
     def __init__(self, x, y):
